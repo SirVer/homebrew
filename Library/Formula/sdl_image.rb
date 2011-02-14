@@ -6,7 +6,9 @@ class SdlImage < Formula
   homepage 'http://www.libsdl.org/projects/SDL_image'
   md5 '6c06584b31559e2b59f2b982d0d1f628'
 
+  depends_on 'libtiff'
   depends_on 'sdl'
+  depends_on 'jpeg'
 
   def install
     ENV.x11 # For Freetype
@@ -15,7 +17,8 @@ class SdlImage < Formula
     system "./configure", "--prefix=#{prefix}",
                           "--disable-dependency-tracking",
                           "--disable-sdltest",
-                          "--with-freetype-exec-prefix=/usr/X11"
+                          "--with-freetype-exec-prefix=/usr/X11",
+                          "--disable-imageio" # Still broken
     system "make install"
   end
 end
