@@ -4,6 +4,7 @@ class Graphviz < Formula
   url 'http://www.graphviz.org/pub/graphviz/stable/SOURCES/graphviz-2.28.0.tar.gz'
   md5 '8d26c1171f30ca3b1dc1b429f7937e58'
   homepage 'http://graphviz.org/'
+  head 'http://hg.research.att.com/graphviz', :using => :hg
 
   depends_on 'pkg-config' => :build
 
