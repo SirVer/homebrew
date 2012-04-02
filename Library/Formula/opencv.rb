@@ -73,6 +73,7 @@ class Opencv < Formula
       args << "-DPYTHON_INCLUDE_DIR='#{python_prefix}/include/#{which_python}'"
     end
     args << "-DPYTHON_PACKAGES_PATH='#{lib}/#{which_python}/site-packages'"
+    args << "-DWITH_FFMPEG=OFF"
 
     system 'cmake', '.', *args
     system "make"
