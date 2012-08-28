@@ -7,9 +7,7 @@ class Pixman < Formula
 
   depends_on 'pkg-config' => :build
 
-  keg_only :provided_by_osx,
-    "Apple provides an outdated version of libpixman in its X11 distribution." \
-    if MacOS::X11.installed?
+  keg_only :provided_pre_mountain_lion
 
   option :universal
 
@@ -25,13 +23,13 @@ class Pixman < Formula
   def install
     ENV.universal_binary if build.universal?
 
+    # Disable gtk as it is only used to build tests
     args = %W[--disable-dependency-tracking
               --disable-gtk
               --prefix=#{prefix}]
 
     args << "--disable-mmx" if ENV.compiler == :clang
 
-    # Disable gtk as it is only used to build tests
     system "./configure", *args
     system "make install"
   end
