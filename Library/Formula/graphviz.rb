@@ -6,6 +6,8 @@ class Graphviz < Formula
   sha1 '4725d88a13e071ee22e632de551d4a55ca08ee7d'
   head 'http://hg.research.att.com/graphviz', :using => :hg
 
+  env :std
+
   option :universal
   option 'with-bindings', 'Build Perl/Python/Ruby/etc. bindings'
   option 'with-pangocairo', 'Build with Pango/Cairo for alternate PDF output'
@@ -17,6 +19,7 @@ class Graphviz < Formula
   depends_on 'pango' if build.include? 'with-pangocairo'
   depends_on 'swig' if build.include? 'with-bindings'
   depends_on :xcode if build.include? 'with-app'
+  depends_on 'gd'
 
   fails_with :clang do
     build 318
@@ -61,7 +64,6 @@ class Graphviz < Formula
       EOS
 
       system "#{bin}/dot", "-Tpdf", "-o", "sample.pdf", "sample.dot"
-      system "/usr/bin/qlmanage", "-p", "./sample.pdf"
     end
   end
 
