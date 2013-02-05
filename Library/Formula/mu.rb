@@ -1,6 +1,14 @@
 require 'formula'
 
 class Emacs23Installed < Requirement
+  fatal true
+  env :userpaths
+
+  satisfy do
+    `emacs --version 2>/dev/null` =~ /^GNU Emacs (\d{2})/
+    $1.to_i >= 23
+  end
+
   def message; <<-EOS.undent
     Emacs 23 or greater is required to build this software.
 
@@ -10,13 +18,6 @@ class Emacs23Installed < Requirement
     Or you can use any other Emacs distribution
     that provides version 23 or greater.
     EOS
-  end
-  def satisfied?
-    `emacs --version 2>/dev/null` =~ /^GNU Emacs (\d{2})/
-    $1.to_i >= 23
-  end
-  def fatal?
-    true
   end
 end
 
@@ -33,7 +34,7 @@ class Mu < Formula
   depends_on 'glib'
   depends_on 'gmime'
   depends_on 'xapian'
-  depends_on Emacs23Installed.new if build.include? 'with-emacs'
+  depends_on Emacs23Installed if build.include? 'with-emacs'
 
   if build.head?
     depends_on 'automake' => :build
