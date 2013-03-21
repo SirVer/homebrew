@@ -22,12 +22,12 @@ class Notmuch < Formula
   option "emacs", "Install emacs support."
 
   depends_on NewEnoughEmacs if build.include? "emacs"
+  depends_on 'pkg-config' => :build
   depends_on 'xapian'
   depends_on 'talloc'
   depends_on 'gmime'
 
   fails_with :clang do
-    build 425
     cause "./lib/notmuch-private.h:478:8: error: visibility does not match previous declaration"
   end
 

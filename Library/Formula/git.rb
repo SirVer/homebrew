@@ -1,23 +1,24 @@
 require 'formula'
 
 class GitManuals < Formula
-  url 'http://git-core.googlecode.com/files/git-manpages-1.8.1.3.tar.gz'
-  sha1 '12aaa8a0428e64d194665379ab0335d786728930'
+  url 'http://git-core.googlecode.com/files/git-manpages-1.8.2.tar.gz'
+  sha1 'a10083a2a1fe6b35919fd6765f25dec18f4fa752'
 end
 
 class GitHtmldocs < Formula
-  url 'http://git-core.googlecode.com/files/git-htmldocs-1.8.1.3.tar.gz'
-  sha1 '6b1e57bde2f2b0a86532390c15bfa7b181c50db2'
+  url 'http://git-core.googlecode.com/files/git-htmldocs-1.8.2.tar.gz'
+  sha1 'db1ca968f492f7ad1d4e0c13d07f23c745d10b74'
 end
 
 class Git < Formula
   homepage 'http://git-scm.com'
-  url 'http://git-core.googlecode.com/files/git-1.8.1.3.tar.gz'
-  sha1 '29ed9047263f9835726200226451339276641779'
+  url 'http://git-core.googlecode.com/files/git-1.8.2.tar.gz'
+  sha1 '42960ec7c2d8404af3d3f6d21f32f1e97e6e0a96'
 
   head 'https://github.com/git/git.git'
 
   option 'with-blk-sha1', 'Compile with the block-optimized SHA1 implementation'
+  option 'without-completions', 'Disable bash/zsh completions from "contrib" directory'
 
   depends_on 'pcre' => :optional
 
@@ -34,7 +35,7 @@ class Git < Formula
     # Clean XCode 4.x installs don't include Perl MakeMaker
     ENV['NO_PERL_MAKEMAKER'] = '1' if MacOS.version >= :lion
 
-    ENV['BLK_SHA1'] = '1' if build.include? 'with-blk-sha1'
+    ENV['BLK_SHA1'] = '1' if build.with? 'blk-sha1'
 
     if build.with? 'pcre'
       ENV['USE_LIBPCRE'] = '1'
@@ -64,12 +65,14 @@ class Git < Formula
       bin.install 'git-subtree'
     end
 
-    # install the completion script first because it is inside 'contrib'
-    bash_completion.install 'contrib/completion/git-completion.bash'
-    bash_completion.install 'contrib/completion/git-prompt.sh'
+    unless build.without? 'completions'
+      # install the completion script first because it is inside 'contrib'
+      bash_completion.install 'contrib/completion/git-completion.bash'
+      bash_completion.install 'contrib/completion/git-prompt.sh'
 
-    zsh_completion.install 'contrib/completion/git-completion.zsh' => '_git'
-    ln_sf "#{etc}/bash_completion.d/git-completion.bash", zsh_completion
+      zsh_completion.install 'contrib/completion/git-completion.zsh' => '_git'
+      cp "#{bash_completion}/git-completion.bash", zsh_completion
+    end
 
     (share+'git-core').install 'contrib'
 

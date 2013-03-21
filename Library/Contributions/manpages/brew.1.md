@@ -78,7 +78,7 @@ Note that these flags should only appear after a command.
     The options `--set-name` and `--set-version` each take an argument and allow
     you to explicitly set the name and version of the package you are creating.
 
-  * `deps [--1] [-n] [--tree] [--all]` <formula>:
+  * `deps [--1] [-n] [--tree] [--all] [--installed]` <formula>:
     Show <formula>'s dependencies.
 
     If `--1` is passed, only show dependencies one level down, instead of
@@ -342,7 +342,7 @@ to create your own commands without modifying Homebrew's internals.
 A number of (useful, but unsupported) external commands are included and enabled
 by default:
 
-    $ ls `brew --repository`/Library/Contributions/cmds
+    $ ls `brew --repository`/Library/Contributions/cmd
 
 Documentation for the included external commands as well as instructions for
 creating your own can be found on the wiki:
