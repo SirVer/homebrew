@@ -2,12 +2,17 @@ require 'formula'
 
 class Libgcrypt < Formula
   homepage 'http://gnupg.org/'
-  url 'ftp://ftp.gnupg.org/gcrypt/libgcrypt/libgcrypt-1.5.1.tar.bz2'
-  sha1 '8b60a26b7eae1a727d58932d6b1efeb5716648ed'
+  url 'ftp://ftp.gnupg.org/gcrypt/libgcrypt/libgcrypt-1.5.2.tar.bz2'
+  sha1 'c9998383532ba3e8bcaf690f2f0d65e814b48d2f'
 
   depends_on 'libgpg-error'
 
   option :universal
+
+  fails_with :clang do
+    build 77
+    cause "basic test fails"
+  end
 
   def patches
     if ENV.compiler == :clang

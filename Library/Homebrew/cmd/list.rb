@@ -23,7 +23,7 @@ module Homebrew extend self
     end
   end
 
-private
+  private
 
   def list_unbrewed
     dirs = HOMEBREW_PREFIX.children.select{ |pn| pn.directory? }.map{ |pn| pn.basename.to_s }
@@ -58,7 +58,8 @@ private
     else
       ARGV.named.map{ |n| HOMEBREW_CELLAR+n }.select{ |pn| pn.exist? }
     end.select do |d|
-      (HOMEBREW_LIBRARY/"PinnedKegs"/d.basename.to_s).exist?
+      keg_pin = (HOMEBREW_LIBRARY/"PinnedKegs"/d.basename.to_s)
+      keg_pin.exist? or keg_pin.symlink?
     end.each do |d|
       puts d.basename
     end

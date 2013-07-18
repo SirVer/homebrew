@@ -1,13 +1,5 @@
 require 'formula'
 
-def ghostscript_srsly?
-  build.include? 'with-ghostscript'
-end
-
-def ghostscript_fonts?
-  File.directory? "#{HOMEBREW_PREFIX}/share/ghostscript/fonts"
-end
-
 class Graphicsmagick < Formula
   homepage 'http://www.graphicsmagick.org/'
   url 'http://downloads.sourceforge.net/project/graphicsmagick/graphicsmagick/1.3.18/GraphicsMagick-1.3.18.tar.bz2'
@@ -15,7 +7,6 @@ class Graphicsmagick < Formula
 
   head 'hg://http://graphicsmagick.hg.sourceforge.net:8000/hgroot/graphicsmagick/graphicsmagick'
 
-  option 'with-ghostscript', 'Compile against ghostscript (not recommended.)'
   option 'use-tiff', 'Compile with libtiff support.'
   option 'use-cms', 'Compile with little-cms support.'
   option 'use-jpeg2000', 'Compile with jasper support.'
@@ -32,7 +23,7 @@ class Graphicsmagick < Formula
   depends_on :libpng
   depends_on :x11 if build.include? 'with-x'
 
-  depends_on 'ghostscript' if ghostscript_srsly?
+  depends_on 'ghostscript' => :optional
 
   depends_on 'libtiff' if build.include? 'use-tiff'
   depends_on 'little-cms2' if build.include? 'use-cms'
@@ -46,6 +37,10 @@ class Graphicsmagick < Formula
 
   skip_clean :la
 
+  def ghostscript_fonts?
+    File.directory? "#{HOMEBREW_PREFIX}/share/ghostscript/fonts"
+  end
+
   def install
     # versioned stuff in main tree is pointless for us
     inreplace 'configure', '${PACKAGE_NAME}-${PACKAGE_VERSION}', '${PACKAGE_NAME}'
@@ -54,8 +49,8 @@ class Graphicsmagick < Formula
             "--prefix=#{prefix}",
             "--enable-shared", "--disable-static"]
     args << "--without-magick-plus-plus" if build.include? 'without-magick-plus-plus'
-    args << "--disable-openmp" if MacOS.version == :leopard or not ENV.compiler == :gcc # libgomp unavailable
-    args << "--with-gslib" if ghostscript_srsly?
+    args << "--disable-openmp" if MacOS.version <= :leopard or not ENV.compiler == :gcc # libgomp unavailable
+    args << "--with-gslib" if build.with? 'ghostscript'
     args << "--with-gs-font-dir=#{HOMEBREW_PREFIX}/share/ghostscript/fonts" \
               unless ghostscript_fonts?
 
@@ -75,7 +70,6 @@ class Graphicsmagick < Formula
   end
 
   def test
-    system "#{bin}/gm", "identify", \
-      "/System/Library/Frameworks/SecurityInterface.framework/Versions/A/Resources/Key_Large.png"
+    system "#{bin}/gm", "identify", "/usr/share/doc/cups/images/cups.png"
   end
 end

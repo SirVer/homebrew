@@ -1,26 +1,28 @@
 require 'formula'
 
 class GitManuals < Formula
-  url 'http://git-core.googlecode.com/files/git-manpages-1.8.2.tar.gz'
-  sha1 'a10083a2a1fe6b35919fd6765f25dec18f4fa752'
+  url 'http://git-core.googlecode.com/files/git-manpages-1.8.3.3.tar.gz'
+  sha1 '07361cfd38b8c57207b9a5f8bf0c4456b7229b52'
 end
 
 class GitHtmldocs < Formula
-  url 'http://git-core.googlecode.com/files/git-htmldocs-1.8.2.tar.gz'
-  sha1 'db1ca968f492f7ad1d4e0c13d07f23c745d10b74'
+  url 'http://git-core.googlecode.com/files/git-htmldocs-1.8.3.3.tar.gz'
+  sha1 'c6104064c1276b2405a281e104fc54ff86f7299d'
 end
 
 class Git < Formula
   homepage 'http://git-scm.com'
-  url 'http://git-core.googlecode.com/files/git-1.8.2.tar.gz'
-  sha1 '42960ec7c2d8404af3d3f6d21f32f1e97e6e0a96'
+  url 'http://git-core.googlecode.com/files/git-1.8.3.3.tar.gz'
+  sha1 '417cb12660446702bffc5c2c83cbb6e7f1e60c79'
 
   head 'https://github.com/git/git.git'
 
   option 'with-blk-sha1', 'Compile with the block-optimized SHA1 implementation'
   option 'without-completions', 'Disable bash/zsh completions from "contrib" directory'
 
+  depends_on :python
   depends_on 'pcre' => :optional
+  depends_on 'gettext' => :optional
 
   def install
     # If these things are installed, tell Git build system to not use them
@@ -28,19 +30,21 @@ class Git < Formula
     ENV['NO_DARWIN_PORTS'] = '1'
     ENV['V'] = '1' # build verbosely
     ENV['NO_R_TO_GCC_LINKER'] = '1' # pass arguments to LD correctly
-    ENV['NO_GETTEXT'] = '1'
-    ENV['PERL_PATH'] = which 'perl' # workaround for users of perlbrew
-    ENV['PYTHON_PATH'] = which 'python' # python can be brewed or unbrewed
+    ENV['PYTHON_PATH'] = python.binary if python
+    ENV['PERL_PATH'] = which 'perl'
 
-    # Clean XCode 4.x installs don't include Perl MakeMaker
-    ENV['NO_PERL_MAKEMAKER'] = '1' if MacOS.version >= :lion
+    unless quiet_system ENV['PERL_PATH'], '-e', 'use ExtUtils::MakeMaker'
+      ENV['NO_PERL_MAKEMAKER'] = '1'
+    end
 
     ENV['BLK_SHA1'] = '1' if build.with? 'blk-sha1'
 
     if build.with? 'pcre'
       ENV['USE_LIBPCRE'] = '1'
-      ENV['LIBPCREDIR'] = HOMEBREW_PREFIX
+      ENV['LIBPCREDIR'] = Formula.factory('pcre').opt_prefix
     end
+
+    ENV['NO_GETTEXT'] = '1' unless build.with? 'gettext'
 
     system "make", "prefix=#{prefix}",
                    "CC=#{ENV.cc}",
@@ -93,7 +97,7 @@ class Git < Formula
 
   test do
     HOMEBREW_REPOSITORY.cd do
-      `#{bin}/git ls-files -- bin`.chomp == 'bin/brew'
+      assert_equal 'bin/brew', `#{bin}/git ls-files -- bin`.strip
     end
   end
 end
