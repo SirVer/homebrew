@@ -10,6 +10,10 @@ class SdlNet < Formula
   depends_on 'pkg-config' => :build
   depends_on 'sdl'
 
+  def patches
+     DATA
+  end
+
   def install
     ENV.universal_binary if build.universal?
     system "./configure", "--disable-debug", "--disable-dependency-tracking",
@@ -18,3 +22,19 @@ class SdlNet < Formula
     system "make install"
   end
 end
+
+__END__
+diff --git a/SDLnetsys.h b/SDLnetsys.h
+index b5cd95b..97f1d30 100644
+--- a/SDLnetsys.h
++++ b/SDLnetsys.h
+@@ -56,9 +56,7 @@ typedef int socklen_t;
+ #ifndef __BEOS__
+ #include <arpa/inet.h>
+ #endif
+-#ifdef linux /* FIXME: what other platforms have this? */
+ #include <netinet/tcp.h>
+-#endif
+ #include <sys/socket.h>
+ #include <net/if.h>
+ #include <netdb.h>

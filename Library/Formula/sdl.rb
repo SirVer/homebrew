@@ -37,7 +37,8 @@ class Sdl < Formula
     args << "--disable-nasm" unless MacOS.version >= :mountain_lion # might work with earlier, might only work with new clang
     # LLVM-based compilers choke on the assembly code packaged with SDL.
     args << '--disable-assembly' if ENV.compiler == :llvm or (ENV.compiler == :clang and MacOS.clang_build_version < 421)
-    args << "--without-x" if build.without? 'x11-driver'
+    args << '--without-x'
+    args << '--enable-static'
 
     system './configure', *args
     system "make install"

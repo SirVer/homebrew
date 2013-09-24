@@ -15,7 +15,12 @@ class SdlMixer < Formula
     inreplace 'SDL_mixer.pc.in', '@prefix@', HOMEBREW_PREFIX
 
     system "./configure", "--prefix=#{prefix}",
-                          "--disable-dependency-tracking"
+                          "--disable-dependency-tracking",
+                          "--enable-music-ogg",
+                          "--disable-music-ogg-shared",
+                          "--disable-music-mp3",
+                          "--disable-music-flac"
+
     system "make install"
   end
 end

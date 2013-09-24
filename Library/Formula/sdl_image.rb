@@ -20,8 +20,12 @@ class SdlImage < Formula
     system "./configure", "--prefix=#{prefix}",
                           "--disable-dependency-tracking",
                           "--disable-sdltest",
-                          "--disable-imageio" # Still broken
-                          "--with-freetype-exec-prefix=#{MacOS.x11_prefix}"
+                          "--with-freetype-exec-prefix=#{MacOS.x11_prefix}",
+                          "--disable-imageio",
+                          "--disable-jpg-shared",
+                          "--disable-png-shared",
+                          "--disable-tif"
+
     system "make install"
   end
 end
