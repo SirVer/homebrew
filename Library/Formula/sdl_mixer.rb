@@ -16,10 +16,15 @@ class SdlMixer < Formula
 
     system "./configure", "--prefix=#{prefix}",
                           "--disable-dependency-tracking",
-                          "--enable-music-ogg",
-                          "--disable-music-ogg-shared",
+                          "--disable-music-flac",
+                          "--disable-music-flac-shared",
+                          "--disable-music-mod-shared",
                           "--disable-music-mp3",
-                          "--disable-music-flac"
+                          "--disable-music-mp3-shared",
+                          "--disable-music-ogg-shared",
+                          "--enable-music-mod",
+                          "--enable-music-ogg",
+                          "--enable-music-wave"
 
     system "make install"
   end
