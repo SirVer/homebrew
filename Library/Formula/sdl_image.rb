@@ -18,6 +18,7 @@ class SdlImage < Formula
     inreplace 'SDL_image.pc.in', '@prefix@', HOMEBREW_PREFIX
 
     system "./configure", "--prefix=#{prefix}",
+                          "--enable-static",
                           "--disable-dependency-tracking",
                           "--disable-sdltest",
                           "--with-freetype-exec-prefix=#{MacOS.x11_prefix}",
