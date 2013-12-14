@@ -6,10 +6,19 @@ class SdlImage < Formula
   sha1 '5e3e393d4e366638048bbb10d6a269ea3f4e4cf2'
   md5 'a0f9098ebe5400f0bdc9b62e60797ecb'
 
+<<<<<<< HEAD
   depends_on 'libtiff'
   depends_on 'sdl'
   depends_on 'jpeg'
   depends_on :x11 # for Freetype
+=======
+  depends_on 'pkg-config' => :build
+  depends_on 'sdl'
+  depends_on 'jpeg'    => :recommended
+  depends_on 'libpng'  => :recommended
+  depends_on 'libtiff' => :recommended
+  depends_on 'webp'    => :recommended
+>>>>>>> master
 
   option :universal
 

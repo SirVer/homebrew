@@ -6,19 +6,13 @@ class Isync < Formula
   sha1 '5cd7403722584b9677fc6a4185c0b9a00f153453'
 
   head do
-    url 'git://isync.git.sourceforge.net/gitroot/isync/isync'
+    url 'git://git.code.sf.net/p/isync/isync'
 
     depends_on :autoconf
     depends_on :automake
   end
 
   depends_on 'berkeley-db'
-
-  def patches
-    # Add "PassCommand" config:
-    # http://sourceforge.net/p/isync/patches/12/
-    "http://sourceforge.net/p/isync/patches/_discuss/thread/17e52692/e059/attachment/passcommand.patch"
-  end if build.head?
 
   def install
     system "touch", "ChangeLog" if build.head?

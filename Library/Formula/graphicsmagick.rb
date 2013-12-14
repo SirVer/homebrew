@@ -10,8 +10,10 @@ class Graphicsmagick < Formula
   option 'with-quantum-depth-16', 'Compile with a quantum depth of 16 bit'
   option 'with-quantum-depth-32', 'Compile with a quantum depth of 32 bit'
   option 'without-magick-plus-plus', 'disable build/install of Magick++'
+  option 'without-svg', 'Compile without svg support'
+  option 'with-perl', 'Build PerlMagick; provides the Graphics::Magick module'
 
-  depends_on :libltdl
+  depends_on :libtool => :run
 
   depends_on 'pkg-config' => :build
 
@@ -25,14 +27,10 @@ class Graphicsmagick < Formula
   depends_on 'little-cms2' => :optional
   depends_on 'jasper' => :optional
   depends_on 'libwmf' => :optional
-  depends_on 'librsvg' => :optional
-  depends_on 'liblqr' => :optional
-  depends_on 'openexr' => :optional
   depends_on 'ghostscript' => :optional
-  depends_on 'webp' => :optional
 
   opoo '--with-ghostscript is not recommended' if build.with? 'ghostscript'
-  if build.with? 'openmp' and (MacOS.version == 10.5 or ENV.compiler == :clang)
+  if build.with? 'openmp' and (MacOS.version == :leopard or ENV.compiler == :clang)
     opoo '--with-openmp is not supported on Leopard or with Clang'
   end
 
@@ -54,11 +52,10 @@ class Graphicsmagick < Formula
              "--with-modules"]
 
     args << "--disable-openmp" unless build.include? 'enable-openmp'
-    args << "--disable-opencl" if build.include? 'disable-opencl'
     args << "--without-gslib" unless build.with? 'ghostscript'
     args << "--with-gs-font-dir=#{HOMEBREW_PREFIX}/share/ghostscript/fonts" unless build.with? 'ghostscript'
     args << "--without-magick-plus-plus" if build.without? 'magick-plus-plus'
-    args << "--enable-hdri=yes" if build.include? 'enable-hdri'
+    args << "--with-perl" if build.include? 'with-perl'
 
     if build.with? 'quantum-depth-32'
       quantum_depth = 32
@@ -69,18 +66,38 @@ class Graphicsmagick < Formula
     end
 
     args << "--with-quantum-depth=#{quantum_depth}" if quantum_depth
-    args << "--with-rsvg" if build.with? 'librsvg'
     args << "--without-x" unless build.with? 'x11'
-    args << "--with-freetype=yes" if build.with? 'freetype'
-    args << "--with-webp=yes" if build.include? 'webp'
+    args << "--without-ttf" if build.without? 'freetype'
+    args << "--without-xml" if build.without? 'svg'
+    args << "--without-lcms" unless build.with? 'little-cms'
+    args << "--without-lcms2" unless build.with? 'little-cms2'
 
     # versioned stuff in main tree is pointless for us
     inreplace 'configure', '${PACKAGE_NAME}-${PACKAGE_VERSION}', '${PACKAGE_NAME}'
     system "./configure", *args
-    system "make install"
+    system "make", "install"
+    if build.include? 'with-perl'
+      cd 'PerlMagick' do
+        # Install the module under the GraphicsMagick prefix
+        system "perl", "Makefile.PL", "PREFIX=#{prefix}"
+        system "make"
+        system "make", "install"
+      end
+    end
   end
 
   test do
     system "#{bin}/gm", "identify", "/usr/share/doc/cups/images/cups.png"
+  end
+
+  def caveats
+    if build.include? 'with-perl'
+      <<-EOS.undent
+        The Graphics::Magick perl module has been installed under:
+
+          #{lib}
+
+      EOS
+    end
   end
 end

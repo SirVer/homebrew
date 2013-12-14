@@ -2,8 +2,9 @@ require 'formula'
 
 class Mercurial < Formula
   homepage 'http://mercurial.selenic.com/'
-  url 'http://mercurial.selenic.com/release/mercurial-2.7.1.tar.gz'
-  sha1 '3c2b75421a1f141305a773711b637f81020b89a1'
+  url 'http://mercurial.selenic.com/release/mercurial-2.8.1.tar.gz'
+  mirror 'http://fossies.org/linux/misc/mercurial-2.8.1.tar.gz'
+  sha1 'f44c5ca419ed8fb2d83f6945c093349a0602908c'
 
   head 'http://selenic.com/repo/hg', :using => :hg
 

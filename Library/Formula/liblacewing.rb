@@ -3,8 +3,8 @@ require 'formula'
 class Liblacewing < Formula
   homepage 'http://lacewing-project.org/'
   head 'https://github.com/udp/lacewing.git'
-  url 'https://github.com/udp/lacewing/archive/0.5.3.tar.gz'
-  sha1 'ce94a6b5228d6af46eb54ecd669bb56f4f56407a'
+  url 'https://github.com/udp/lacewing/archive/0.5.4.tar.gz'
+  sha1 '078486a4dcd6ce33c2c881954c5dc82843411ac9'
 
   # Use a newer OpenSSL to get SPDY support
   depends_on 'openssl'

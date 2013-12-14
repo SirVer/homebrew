@@ -6,15 +6,18 @@ class Ghc < Formula
   sha1 '8938e1ef08b37a4caa071fa169e79a3001d065ff'
 
   bottle do
-    sha1 '332ed50be17831557b5888f7e8395f1beb008731' => :mountain_lion
-    sha1 '64a7548eb2135a4b5f2276e59f435a39c2d2961f' => :lion
-    sha1 '166bf3c8a512b58da4119b2997a1f45c1f7c65b5' => :snow_leopard
+    revision 2
+    sha1 'a6ceeb3f1f9ba2cf0454dc9d45dce69f8a5ae736' => :mavericks
+    sha1 'd91ee56c8066bae5173f705e83e15dbb8842f67f' => :mountain_lion
+    sha1 '1569f19cdad2675cbff328c0e259d6b8573e9d11' => :lion
   end
 
   env :std
 
   # http://hackage.haskell.org/trac/ghc/ticket/6009
   depends_on :macos => :snow_leopard
+
+  depends_on 'apple-gcc42' if MacOS.version >= :mountain_lion
 
   option '32-bit'
   option 'tests', 'Verify the build using the testsuite in Fast Mode, 5 min'

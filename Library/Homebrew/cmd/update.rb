@@ -17,9 +17,21 @@ module Homebrew extend self
     cd HOMEBREW_REPOSITORY
     git_init_if_necessary
 
+    tapped_formulae = Dir['Library/Formula/*'].map do |formula|
+      path = Pathname.new formula
+      next unless path.symlink?
+      Pathname.new(path.realpath.to_s.gsub(/.*Taps\//, '')) rescue nil
+    end
+    tapped_formulae.compact!
+    unlink_tap_formula(tapped_formulae)
+
     report = Report.new
     master_updater = Updater.new
-    master_updater.pull!
+    begin
+      master_updater.pull!
+    ensure
+      link_tap_formula(tapped_formulae)
+    end
     report.merge!(master_updater.report)
 
     Dir["Library/Taps/*"].each do |tapd|
@@ -42,6 +54,18 @@ module Homebrew extend self
     # we unlink first in case the formula has moved to another tap
     Homebrew.unlink_tap_formula(report.removed_tapped_formula)
     Homebrew.link_tap_formula(report.new_tapped_formula)
+
+    # automatically tap any migrated formulae's new tap
+    report.select_formula(:D).each do |f|
+      next unless (HOMEBREW_CELLAR/f).exist?
+      migration = TAP_MIGRATIONS[f]
+      next unless migration
+      tap_user, tap_repo = migration.split '/'
+      begin
+        install_tap tap_user, tap_repo
+      rescue AlreadyTappedError
+      end
+    end if load_tap_migrations
 
     if report.empty?
       puts "Already up-to-date."
@@ -66,6 +90,11 @@ module Homebrew extend self
     raise
   end
 
+  def load_tap_migrations
+    require 'tap_migrations'
+  rescue LoadError
+    false
+  end
 end
 
 class Updater
@@ -100,7 +129,7 @@ class Updater
   end
 
   # Matches raw git diff format (see `man git-diff-tree`)
-  DIFFTREE_RX = /^:[0-7]{6} [0-7]{6} [0-9a-fA-F]{40} [0-9a-fA-F]{40} ([ACDMR])\d{0,3}\t(.+?)(?:\t(.+))?$/
+  DIFFTREE_RX = /^:[0-7]{6} [0-7]{6} [0-9a-fA-F]{40} [0-9a-fA-F]{40} ([ACDMRTUX])\d{0,3}\t(.+?)(?:\t(.+))?$/
 
   def report
     map = Hash.new{ |h,k| h[k] = [] }
